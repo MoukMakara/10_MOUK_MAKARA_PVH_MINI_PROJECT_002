@@ -17,8 +17,7 @@ export default function RegisterFormComponent() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      fullName: "",
       email: "",
       password: "",
       birthDate: "",
@@ -29,7 +28,16 @@ export default function RegisterFormComponent() {
     setLoading(true);
     setError("");
     try {
-      const response = await registerService(data);
+      const fullName = data.fullName?.trim() || "";
+      const nameParts = fullName.split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      const response = await registerService({
+        ...data,
+        firstName,
+        lastName,
+      });
       if (response.status === "201 CREATED") {
         alert("Registration successful!");
         router.push("/login");
@@ -56,37 +64,19 @@ export default function RegisterFormComponent() {
         </div>
       )}
 
-      {/* First Name */}
+      {/* Full Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          First name
+          Full name
         </label>
         <input
           type="text"
-          {...register("firstName", { required: "First name is required" })}
-          placeholder="Mouk"
+          {...register("fullName", { required: "Full name is required" })}
+          placeholder="Mouk Makara"
           className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none ring-lime-400/20 focus:border-lime-400 focus:ring-2"
         />
-        {errors.firstName && (
-          <p className="mt-1 text-sm text-red-600">
-            {errors.firstName.message}
-          </p>
-        )}
-      </div>
-
-      {/* Last Name */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Last name
-        </label>
-        <input
-          type="text"
-          {...register("lastName", { required: "Last name is required" })}
-          placeholder="Makara"
-          className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none ring-lime-400/20 focus:border-lime-400 focus:ring-2"
-        />
-        {errors.lastName && (
-          <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+        {errors.fullName && (
+          <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
         )}
       </div>
 
