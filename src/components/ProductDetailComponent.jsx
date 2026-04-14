@@ -123,88 +123,102 @@ const ProductDetailComponent = ({ productData }) => {
           {/* Product Details Section */}
           <div className="flex flex-col">
             {/* Product Name */}
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              {productData?.name || "Product Name"}
-            </h1>
-
-            {/* Rating */}
-            <div className="flex items-center mb-4 space-x-2">
-              <div className="flex items-center">
+            <div className="flex items-center gap-3 mb-4">
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                {productData?.name || "Product Name"}
+              </h1>
+              {/* Rating Stars */}
+              <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
-                  <span
-                    key={i}
-                    className={`text-lg ${
-                      i < Math.floor(rating)
-                        ? "text-yellow-400"
-                        : "text-gray-300 dark:text-gray-600"
-                    }`}
-                  >
+                  <span key={i} className="text-xl text-yellow-400">
                     ★
                   </span>
                 ))}
               </div>
-              <span className="text-gray-700 dark:text-gray-300 font-semibold">
-                ({rating})
-              </span>
-              {reviews > 0 && (
-                <span className="text-gray-500 dark:text-gray-400 text-sm">
-                  {reviews} reviews
-                </span>
-              )}
             </div>
 
-            {/* Price */}
+            {/* Price with Original Price Strikethrough */}
             <div className="mb-6">
-              <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                ${productData?.price || "0"}
-              </span>
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                  ${productData?.price || "0"}
+                </span>
+                {productData?.originalPrice && (
+                  <span className="text-lg text-gray-400 line-through">
+                    ${productData?.originalPrice}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Description */}
-            <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
               {productData?.description || "Product description not available"}
             </p>
-
-            {/* Available Size */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                Available Size
-              </label>
-              <div className="flex gap-2 flex-wrap">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                      selectedSize === size
-                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                        : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* Available Color */}
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                Available Color
+                Choose a color
+              </label>
+              <div className="flex gap-2 flex-wrap mb-2">
+                {colors.map((color, index) => {
+                  const colorName =
+                    color === "#000000"
+                      ? "black"
+                      : color === "#808080"
+                        ? "gray"
+                        : color === "#22c55e"
+                          ? "green"
+                          : color.toLowerCase();
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedColor(color)}
+                      className={`px-4 py-2 rounded-full font-medium text-sm transition-all border-2 ${
+                        selectedColor === color
+                          ? "border-gray-900 dark:border-white bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                          : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-500"
+                      }`}
+                    >
+                      {colorName}
+                    </button>
+                  );
+                })}
+              </div>
+              {selectedColor && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  Selected:{" "}
+                  {selectedColor === "#000000"
+                    ? "black"
+                    : selectedColor === "#808080"
+                      ? "gray"
+                      : selectedColor === "#22c55e"
+                        ? "green"
+                        : selectedColor.toLowerCase()}
+                </p>
+              )}
+            </div>
+
+            {/* Available Size */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                Choose a size
               </label>
               <div className="flex gap-3 flex-wrap">
-                {colors.map((color, index) => (
+                {sizes.map((size) => (
                   <button
-                    key={index}
-                    onClick={() => setSelectedColor(color)}
-                    className={`w-10 h-10 rounded-full border-2 transition-all ${
-                      selectedColor === color
-                        ? "border-gray-400 scale-110"
-                        : "border-transparent hover:border-gray-400"
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`w-12 h-12 rounded-full font-semibold transition-all border-2 flex items-center justify-center ${
+                      selectedSize === size
+                        ? "border-blue-500 text-blue-600 dark:text-blue-400 bg-transparent"
+                        : "border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-300 hover:border-gray-500"
                     }`}
-                    style={{ backgroundColor: color }}
-                    title={color}
-                  />
+                  >
+                    {size}
+                  </button>
                 ))}
               </div>
             </div>
@@ -218,13 +232,22 @@ const ProductDetailComponent = ({ productData }) => {
               </p>
             </div>
 
+            {/* Added to Cart Message */}
+            {isAdding && (
+              <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-between">
+                <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                  Added to cart — View cart
+                </span>
+              </div>
+            )}
+
             {/* Quantity Selector and Add to Cart */}
             <div className="flex items-center gap-4 mb-6">
               {/* Quantity Selector */}
               <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
                 <button
                   onClick={() => handleQuantityChange(quantity - 1)}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                  className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
                 >
                   −
                 </button>
@@ -234,12 +257,12 @@ const ProductDetailComponent = ({ productData }) => {
                   onChange={(e) =>
                     handleQuantityChange(parseInt(e.target.value) || 1)
                   }
-                  className="w-12 h-full text-center font-semibold border-0 bg-transparent outline-none text-gray-900 dark:text-white"
+                  className="w-12 text-center font-semibold border-0 bg-transparent outline-none text-gray-900 dark:text-white"
                   min="1"
                 />
                 <button
                   onClick={() => handleQuantityChange(quantity + 1)}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                  className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
                 >
                   +
                 </button>
@@ -249,12 +272,25 @@ const ProductDetailComponent = ({ productData }) => {
               <button
                 onClick={handleAddToCart}
                 disabled={isAdding}
-                className={`flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 px-6 rounded-lg font-bold hover:bg-gray-800 dark:hover:bg-gray-100 transition-all ${
-                  isAdding ? "opacity-60 cursor-not-allowed" : ""
-                }`}
+                className="flex-1 bg-gray-800 dark:bg-gray-800 text-white py-3 px-6 rounded-lg font-bold hover:bg-gray-900 dark:hover:bg-gray-700 transition-all flex items-center justify-center gap-2"
               >
-                {isAdding ? "Added!" : "Add to cart"}
+                Add to cart
               </button>
+            </div>
+
+            {/* Free Returns Info */}
+            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">↔️</span>
+                <div>
+                  <p className="font-semibold text-gray-900 dark:text-white text-sm">
+                    Free 30-day returns
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    See return policy details in cart.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
