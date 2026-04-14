@@ -2,32 +2,28 @@
 
 import { useState } from "react";
 import { Button } from "@heroui/react";
-
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+// import { loginSchema } from "@/lib/zod/loginSchema";
+import { loginSchema } from "../../../lib/zod/loginSchema";
 
 export default function LoginFormComponent() {
   const [submitError, setSubmitError] = useState("");
-
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm({
-  //   defaultValues: {
-  //     email: "",
-  //     password: "",
-  //   },
-  // });
-
-  // const onSubmit = (data) => {
-  //   console.log(data);
-  //   setSubmitError("Demo only — no login backend is connected yet.");
-  // };
-
   const router = useRouter();
-  const { handleSubmit, reset, register } = useForm();
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   const onSubmit = async (data) => {
     setSubmitError("");
@@ -70,6 +66,9 @@ export default function LoginFormComponent() {
           className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none ring-lime-400/20 focus:border-lime-400 focus:ring-2"
           placeholder="you@example.com"
         />
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+        )}
       </div>
 
       <div>
@@ -87,14 +86,18 @@ export default function LoginFormComponent() {
           className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none ring-lime-400/20 focus:border-lime-400 focus:ring-2"
           placeholder="••••••••"
         />
+        {errors.password && (
+          <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+        )}
       </div>
 
       <Button
         type="submit"
+        disabled={isSubmitting}
         variant="solid"
-        className="w-full rounded-full bg-lime-400 py-3.5 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-lime-300"
+        className="w-full rounded-full bg-lime-400 py-3.5 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-lime-300 disabled:opacity-50"
       >
-        Sign in
+        {isSubmitting ? "Signing in..." : "Sign in"}
       </Button>
     </form>
   );

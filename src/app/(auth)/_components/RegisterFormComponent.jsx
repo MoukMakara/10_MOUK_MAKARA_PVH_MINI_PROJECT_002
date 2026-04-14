@@ -2,10 +2,13 @@
 
 import { Button } from "@heroui/react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 // import { registerService } from "@/service/auth/register.service";
 import { registerService } from "../../../service/auth/register.service";
 import { useRouter } from "next/navigation";
+// import { registerSchema } from "@/lib/zod/registerSchema";
+import { registerSchema } from "../../../lib/zod/registerSchema";
 
 export default function RegisterFormComponent() {
   const router = useRouter();
@@ -16,6 +19,7 @@ export default function RegisterFormComponent() {
     handleSubmit,
     formState: { errors },
   } = useForm({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       fullName: "",
       email: "",
@@ -71,7 +75,7 @@ export default function RegisterFormComponent() {
         </label>
         <input
           type="text"
-          {...register("fullName", { required: "Full name is required" })}
+          {...register("fullName")}
           placeholder="Mouk Makara"
           className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none ring-lime-400/20 focus:border-lime-400 focus:ring-2"
         />
@@ -85,13 +89,7 @@ export default function RegisterFormComponent() {
         <label className="block text-sm font-medium text-gray-700">Email</label>
         <input
           type="email"
-          {...register("email", {
-            required: "Email is required",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: "Invalid email address",
-            },
-          })}
+          {...register("email")}
           placeholder="you@example.com"
           className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none ring-lime-400/20 focus:border-lime-400 focus:ring-2"
         />
@@ -107,13 +105,7 @@ export default function RegisterFormComponent() {
         </label>
         <input
           type="password"
-          {...register("password", {
-            required: "Password is required",
-            minLength: {
-              value: 6,
-              message: "Password must be at least 6 characters",
-            },
-          })}
+          {...register("password")}
           placeholder="••••••••"
           className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none ring-lime-400/20 focus:border-lime-400 focus:ring-2"
         />
@@ -129,7 +121,7 @@ export default function RegisterFormComponent() {
         </label>
         <input
           type="date"
-          {...register("birthDate", { required: "Birth date is required" })}
+          {...register("birthDate")}
           className="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none ring-lime-400/20 focus:border-lime-400 focus:ring-2"
         />
         {errors.birthDate && (
